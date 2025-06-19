@@ -9,6 +9,9 @@ export default defineConfig({
   site: 'https://Beeex24.github.io',
   base: 'webtest',
 
+  output: 'static',
+  site: 'https://webtest-aic.pages.dev',
+  
   integrations: [mdx(), sitemap()],
   // TypeScript設定を追加
   typescript: {
