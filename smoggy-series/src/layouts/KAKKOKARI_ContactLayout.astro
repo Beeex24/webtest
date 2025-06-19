@@ -1,0 +1,166 @@
+---
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import '@fontsource/zen-kaku-gothic-new/400.css';
+import '@fontsource/zen-kaku-gothic-new/500.css';
+import '@fontsource/zen-kaku-gothic-new/700.css';
+
+const { title, description } = Astro.props;
+---
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <style>
+      :root {
+        --content-width: 800px;
+        --content-padding: 2.5rem 1.5rem;
+        --border-radius: 16px;
+        --header-bg: linear-gradient(90deg, #4f46e5 0%, #38bdf8 100%);
+        --main-bg: #f9f9f9;
+        --main-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      }
+      body {
+        margin: 0;
+        font-family: 'Zen Kaku Gothic New', 'Yu Gothic', 'Meiryo', sans-serif;
+        background: var(--main-bg);
+        color: #222;
+      }
+      main {
+        width: 100%;
+        min-height: 100vh;
+        background: var(--main-bg);
+        margin: 0;
+        padding: 0;
+      }
+      .contact-section {
+        max-width: var(--content-width);
+        margin: 2.5rem auto;
+        background: #fff;
+        border-radius: var(--border-radius);
+        box-shadow: var(--main-shadow);
+        padding: var(--content-padding);
+      }
+      .contact-section h2 {
+        margin-bottom: 0.7rem;
+        font-size: 2.2rem;
+        color: #222;
+        text-align: center;
+        letter-spacing: 0.05em;
+        font-weight: 700;
+      }
+      .contact-desc {
+        text-align: center;
+        margin-bottom: 1.5rem;
+        color: #444;
+        font-size: 1.08rem;
+      }
+      .alert {
+        background: #fff3cd;
+        color: #856404;
+        border: 1px solid #ffeeba;
+        border-radius: 6px;
+        padding: 0.7rem 1rem;
+        margin-bottom: 1.5rem;
+        text-align: center;
+        font-weight: bold;
+      }
+      .form-block {
+        margin-bottom: 2.5rem;
+      }
+      .form-block h3 {
+        margin-bottom: 1rem;
+        font-size: 1.25rem;
+        color: #333;
+        border-left: 4px solid #4f46e5;
+        padding-left: 0.7em;
+        background: #f0f8ff;
+        border-radius: 4px;
+        display: inline-block;
+        font-weight: 600;
+      }
+      .contact-form {
+        display: flex;
+        flex-direction: column;
+        gap: 1.2rem;
+        margin-top: 0.5rem;
+      }
+      .form-group {
+        display: flex;
+        flex-direction: column;
+      }
+      .form-group label {
+        margin-bottom: 0.4rem;
+        font-weight: 600;
+        color: #555;
+        font-size: 1rem;
+      }
+      .required {
+        color: #e53935;
+        font-size: 0.95em;
+        margin-left: 0.2em;
+      }
+      .form-group input,
+      .form-group textarea {
+        padding: 0.7rem;
+        border: 1px solid #bbb;
+        border-radius: 4px;
+        font-size: 1rem;
+        background: #fff;
+        transition: border 0.2s;
+      }
+      .form-group input:focus,
+      .form-group textarea:focus {
+        border-color: #4f46e5;
+        outline: none;
+        background: #f0f8ff;
+      }
+      .submit-button {
+        padding: 0.8rem 1.5rem;
+        background-color: #2563eb;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        font-size: 1.1rem;
+        font-weight: bold;
+        cursor: pointer;
+        transition: background 0.2s;
+        margin-top: 0.5rem;
+      }
+      .submit-button:hover {
+        background-color: #1e40af;
+      }
+      .section-divider {
+        border: none;
+        border-top: 2px dashed #ccc;
+        margin: 2.5rem 0 2rem 0;
+      }
+      @media (max-width: 900px) {
+        .contact-section {
+          max-width: 98vw;
+          padding: 1.2rem 0.5rem;
+        }
+      }
+      @media (max-width: 600px) {
+        .contact-section {
+          padding: 1rem 0.2rem;
+        }
+        .form-block h3 {
+          font-size: 1rem;
+          padding-left: 0.4em;
+        }
+        .contact-section h2 {
+          font-size: 1.3rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <Header />
+    <main>
+      <slot />
+    </main>
+    <Footer />
+  </body>
+</html>

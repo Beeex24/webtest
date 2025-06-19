@@ -1,0 +1,694 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import BaseHead from '../components/BaseHead.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import FormattedDate from '../components/FormattedDate.astro';
+import { render } from 'astro:content';
+import '@fontsource/zen-kaku-gothic-new/400.css';
+import '@fontsource/zen-kaku-gothic-new/500.css';
+import '@fontsource/zen-kaku-gothic-new/700.css';
+
+type Props =  CollectionEntry<'device'>;
+
+const { title, description, pubDate, updatedDate, heroImage } = Astro.props.data ?? Astro.props;
+const post = Astro.props as Props;
+
+// Markdown本文をHTMLとして描画
+const { Content } = await render(post);
+---
+
+<html lang="ja">
+	<head>
+		<BaseHead title={title} description={description} />
+		<style>
+			:root {
+				--content-width: 1200px;
+				--content-padding: 2rem;
+				--border-radius: 16px;
+				--transition: all 0.3s ease;
+				--text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+				--header-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+				--accent-rgb: 102, 126, 234;
+				--gray-light-rgb: 245, 245, 245;
+				--gray-dark-rgb: 44, 62, 80;
+			}
+
+			* {
+				margin: 0;
+				padding: 0;
+				box-sizing: border-box;
+			}
+
+			body {
+				font-family: 'Zen Kaku Gothic New', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+				background: rgb(var(--gray-light-rgb));
+				line-height: 1.6;
+			}
+
+			main {
+				width: 100%;
+				margin: 0;
+				background: rgb(var(--gray-light-rgb));
+				min-height: 100vh;
+			}
+
+			.container {
+				max-width: var(--content-width);
+				margin: 2rem auto;
+				background: white;
+				box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+				border-radius: var(--border-radius);
+				overflow: hidden;
+			}
+
+			/* ヘッダー広告 */
+			.header-ad {
+				padding: 15px;
+				margin: 20px;
+				border: 2px dashed #3498db;
+				border-radius: 8px;
+				text-align: center;
+				font-weight: bold;
+				position: relative;
+				background: rgba(52, 152, 219, 0.1);
+			}
+
+			.header-ad::before {
+				content: "📢";
+				position: absolute;
+				top: -10px;
+				left: 10px;
+				background: white;
+				padding: 0 5px;
+				font-size: 16px;
+			}
+
+			/* メインコンテンツレイアウト */
+			.main-content {
+				display: grid;
+				grid-template-columns: 1fr 320px;
+				gap: 30px;
+				padding: 0 30px 30px;
+			}
+
+			.article-area {
+				background: white;
+			}
+
+			.sidebar {
+				background: #f8f9fa;
+				padding: 20px;
+				border-radius: 12px;
+				height: fit-content;
+				position: sticky;
+				top: 20px;
+			}
+
+			/* ヒーローセクション */
+			.hero-section {
+				position: relative;
+				overflow: hidden;
+			}
+
+			.hero-image {
+				width: 100%;
+				height: 400px;
+				overflow: hidden;
+			}
+
+			.hero-image img {
+				width: 100%;
+				height: 100%;
+				object-fit: cover;
+				transition: var(--transition);
+				filter: brightness(0.9);
+			}
+
+			.hero-image:hover img {
+				transform: scale(1.05);
+				filter: brightness(1);
+			}
+
+			.hero-overlay {
+				position: absolute;
+				bottom: 0;
+				left: 0;
+				right: 0;
+				background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
+				height: 50%;
+				pointer-events: none;
+			}
+
+			/* 記事ヘッダー */
+			.article-header {
+				padding: var(--content-padding);
+				background: var(--header-gradient);
+				color: white;
+			}
+
+			.metadata {
+				display: flex;
+				align-items: center;
+				gap: 1rem;
+				margin-bottom: 1.5rem;
+				flex-wrap: wrap;
+			}
+
+			.date-badge {
+				background: rgba(255, 255, 255, 0.2);
+				color: white;
+				padding: 0.5rem 1rem;
+				border-radius: 50px;
+				font-size: 0.9rem;
+				font-weight: 500;
+				border: 1px solid rgba(255, 255, 255, 0.3);
+			}
+
+			.updated-badge {
+				background: rgba(255, 255, 255, 0.1);
+				color: rgba(255, 255, 255, 0.8);
+				padding: 0.4rem 0.8rem;
+				border-radius: 50px;
+				font-size: 0.8rem;
+				font-style: italic;
+				border: 1px solid rgba(255, 255, 255, 0.2);
+			}
+
+			.article-title {
+				margin: 0;
+				font-size: clamp(2rem, 5vw, 3rem);
+				font-weight: 700;
+				line-height: 1.2;
+				color: white;
+				text-shadow: var(--text-shadow);
+				margin-bottom: 1rem;
+			}
+
+			.title-divider {
+				height: 4px;
+				background: linear-gradient(90deg, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.3));
+				border: none;
+				border-radius: 2px;
+				margin: 0;
+				width: 80px;
+			}
+
+			/* 広告スタイル */
+			.ad-banner {
+				padding: 15px;
+				margin: 20px 0;
+				border: 2px dashed #ff6b6b;
+				border-radius: 8px;
+				text-align: center;
+				font-weight: bold;
+				position: relative;
+				background: rgba(255, 107, 107, 0.1);
+				transition: var(--transition);
+			}
+
+			.ad-banner:hover {
+				transform: translateY(-2px);
+				box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+			}
+
+			.ad-banner::before {
+				content: "💰";
+				position: absolute;
+				top: -10px;
+				left: 10px;
+				background: white;
+				padding: 0 5px;
+				font-size: 16px;
+			}
+
+			.content-ad {
+				background: rgba(46, 204, 113, 0.1);
+				border-color: #2ecc71;
+			}
+
+			.content-ad::before {
+				content: "🎯";
+			}
+
+			.sidebar-ad {
+				background: rgba(155, 89, 182, 0.1);
+				border-color: #9b59b6;
+				margin: 15px 0;
+			}
+
+			.sidebar-ad::before {
+				content: "🎮";
+			}
+
+			.effectiveness-label {
+				position: absolute;
+				top: -8px;
+				right: 10px;
+				color: white;
+				padding: 2px 8px;
+				border-radius: 12px;
+				font-size: 12px;
+			}
+
+			.high { background: #e74c3c; }
+			.medium { background: #f39c12; }
+			.low { background: #95a5a6; }
+
+			/* プロースコンテンツ */
+			.prose {
+				color: rgb(var(--gray-dark-rgb));
+				line-height: 1.8;
+				font-size: 1.1rem;
+			}
+
+			.prose :global(h1) {
+				font-size: 2.2rem;
+				font-weight: 700;
+				margin: 2.5rem 0 1.5rem 0;
+				color: rgb(var(--gray-dark-rgb));
+				border-bottom: 3px solid rgb(var(--accent-rgb));
+				padding-bottom: 0.5rem;
+			}
+
+			.prose :global(h2) {
+				font-size: 1.8rem;
+				font-weight: 600;
+				margin: 2.5rem 0 1rem 0;
+				color: rgb(var(--gray-dark-rgb));
+				border-left: 4px solid rgb(var(--accent-rgb));
+				padding-left: 1rem;
+			}
+
+			.prose :global(h3) {
+				font-size: 1.4rem;
+				font-weight: 500;
+				margin: 2rem 0 0.8rem 0;
+				color: rgb(var(--gray-dark-rgb));
+			}
+
+			.prose :global(h4) {
+				font-size: 1.2rem;
+				font-weight: 500;
+				margin: 1.8rem 0 0.6rem 0;
+				color: rgb(var(--gray-dark-rgb));
+			}
+
+			.prose :global(p) {
+				margin-bottom: 1.5rem;
+				text-align: justify;
+				line-height: 1.8;
+			}
+
+			.prose :global(strong) {
+				font-weight: 600;
+				color: rgb(var(--accent-rgb));
+			}
+
+			.prose :global(em) {
+				font-style: italic;
+				color: rgb(var(--gray-dark-rgb));
+			}
+
+			.prose :global(blockquote) {
+				margin: 2rem 0;
+				padding: 1.5rem;
+				background: rgba(var(--accent-rgb), 0.05);
+				border-left: 4px solid rgb(var(--accent-rgb));
+				border-radius: 0 8px 8px 0;
+				font-style: italic;
+				position: relative;
+			}
+
+			.prose :global(blockquote p) {
+				margin: 0;
+			}
+
+			.prose :global(blockquote::before) {
+				content: '"';
+				font-size: 4rem;
+				color: rgba(var(--accent-rgb), 0.3);
+				position: absolute;
+				top: -0.5rem;
+				left: 1rem;
+				font-family: serif;
+			}
+
+			.prose :global(code) {
+				background: rgba(156, 163, 175, 0.1);
+				padding: 0.2rem 0.4rem;
+				border-radius: 4px;
+				font-size: 0.9rem;
+				color: rgb(var(--accent-rgb));
+				font-family: 'Courier New', monospace;
+			}
+
+			.prose :global(pre) {
+				background: rgb(var(--gray-dark-rgb));
+				color: white;
+				padding: 1.5rem;
+				border-radius: 8px;
+				overflow-x: auto;
+				margin: 1.5rem 0;
+				box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+			}
+
+			.prose :global(pre code) {
+				background: none;
+				padding: 0;
+				color: inherit;
+			}
+
+			.prose :global(ul), .prose :global(ol) {
+				margin: 1.5rem 0;
+				padding-left: 2rem;
+			}
+
+			.prose :global(li) {
+				margin-bottom: 0.8rem;
+				line-height: 1.7;
+			}
+
+			.prose :global(ul li) {
+				list-style-type: disc;
+			}
+
+			.prose :global(ol li) {
+				list-style-type: decimal;
+			}
+
+			.prose :global(a) {
+				color: rgb(var(--accent-rgb));
+				text-decoration: none;
+				border-bottom: 2px solid transparent;
+				transition: var(--transition);
+			}
+
+			.prose :global(a:hover) {
+				border-bottom-color: rgb(var(--accent-rgb));
+			}
+
+			.prose :global(img) {
+				max-width: 100%;
+				height: auto;
+				border-radius: 8px;
+				box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+				margin: 2rem 0;
+				display: block;
+				margin-left: auto;
+				margin-right: auto;
+			}
+
+			.prose :global(table) {
+				width: 100%;
+				border-collapse: collapse;
+				margin: 2rem 0;
+				box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+				border-radius: 8px;
+				overflow: hidden;
+			}
+
+			.prose :global(th), .prose :global(td) {
+				padding: 1rem;
+				text-align: left;
+				border-bottom: 1px solid rgba(156, 163, 175, 0.2);
+			}
+
+			.prose :global(th) {
+				background: rgba(var(--accent-rgb), 0.1);
+				font-weight: 600;
+				color: rgb(var(--gray-dark-rgb));
+			}
+
+			.prose :global(tr:hover) {
+				background: rgba(156, 163, 175, 0.05);
+			}
+
+			.prose :global(hr) {
+				border: none;
+				height: 2px;
+				background: linear-gradient(90deg, transparent, rgba(156, 163, 175, 0.3), transparent);
+				margin: 3rem 0;
+			}
+
+			/* サイドバースタイル */
+			.sidebar h3 {
+				color: rgb(var(--gray-dark-rgb));
+				margin-bottom: 15px;
+				font-size: 1.2rem;
+				border-left: 4px solid rgb(var(--accent-rgb));
+				padding-left: 10px;
+			}
+
+			.sidebar-section {
+				margin-bottom: 25px;
+			}
+
+			/* ツールチップ */
+			.tips {
+				background: #d5edda;
+				border: 1px solid #c3e6cb;
+				border-radius: 8px;
+				padding: 20px;
+				margin: 25px 0;
+			}
+
+			.tips h4 {
+				color: #155724;
+				margin-bottom: 15px;
+				font-size: 1.1rem;
+			}
+
+			.tips ul {
+				color: #155724;
+				margin-left: 20px;
+			}
+
+			.tips li {
+				margin-bottom: 8px;
+			}
+
+			/* レスポンシブデザイン */
+			@media (max-width: 1024px) {
+				.main-content {
+					grid-template-columns: 1fr;
+					gap: 20px;
+				}
+				
+				.sidebar {
+					position: static;
+					margin-top: 20px;
+				}
+			}
+
+			@media (max-width: 768px) {
+				:root {
+					--content-padding: 1.5rem;
+				}
+
+				.container {
+					margin: 1rem;
+					border-radius: 12px;
+				}
+
+				.main-content {
+					padding: 0 20px 20px;
+				}
+
+				.hero-image {
+					height: 200px;
+				}
+
+				.metadata {
+					flex-direction: column;
+					align-items: flex-start;
+					gap: 0.8rem;
+				}
+
+				.article-title {
+					font-size: 2rem;
+				}
+
+				.prose {
+					font-size: 1rem;
+					line-height: 1.7;
+				}
+
+				.prose :global(h1) {
+					font-size: 1.8rem;
+				}
+
+				.prose :global(h2) {
+					font-size: 1.5rem;
+				}
+
+				.prose :global(h3) {
+					font-size: 1.2rem;
+				}
+
+				.ad-banner {
+					padding: 12px;
+					margin: 15px 0;
+				}
+			}
+
+			@media (max-width: 480px) {
+				:root {
+					--content-padding: 1rem;
+				}
+
+				.container {
+					margin: 0.5rem;
+				}
+
+				.main-content {
+					padding: 0 15px 15px;
+				}
+
+				.hero-image {
+					height: 180px;
+				}
+
+				.article-title {
+					font-size: 1.8rem;
+				}
+			}
+
+			/* アニメーション */
+			@keyframes fadeInUp {
+				from {
+					opacity: 0;
+					transform: translateY(20px);
+				}
+				to {
+					opacity: 1;
+					transform: translateY(0);
+				}
+			}
+
+			.article-header, .prose, .sidebar {
+				animation: fadeInUp 0.6s ease-out;
+			}
+
+			.prose {
+				animation-delay: 0.2s;
+			}
+
+			.sidebar {
+				animation-delay: 0.4s;
+			}
+		</style>
+	</head>
+
+	<body>
+		<Header />
+		<main>
+			<div class="container">
+				<!-- ヘッダー広告 -->
+				<div class="ad-banner header-ad">
+					<div class="effectiveness-label medium">中効果</div>
+					<strong>ヘッダー広告 (728×90 or 320×50)</strong><br>
+					ブランド認知向け・ディスプレイ広告<br>
+					CTR: 0.5-1.0% | 収益貢献度: 15-20%
+				</div>
+
+				<article>
+					{heroImage && (
+						<div class="hero-section">
+							<div class="hero-image">
+								<img src={heroImage} alt={title} />
+								<div class="hero-overlay"></div>
+							</div>
+						</div>
+					)}
+					
+					<div class="article-header">
+						<div class="metadata">
+							<span class="date-badge"><FormattedDate date={pubDate} /></span>
+							{updatedDate && <span class="updated-badge">更新: <FormattedDate date={updatedDate} /></span>}
+						</div>
+						<h1 class="article-title">{title}</h1>
+						<hr class="title-divider" />
+					</div>
+
+					<div class="main-content">
+						<div class="article-area">
+							<!-- 記事上部広告 -->
+							<div class="ad-banner content-ad">
+								<div class="effectiveness-label high">高効果</div>
+								<strong>記事上部広告 (300×250 or 336×280)</strong><br>
+								アフィリエイト・商品紹介<br>
+								CTR: 2.0-4.0% | 収益貢献度: 30-40%
+							</div>
+
+							<div class="prose">
+								<Content />
+							</div>
+
+							<!-- 記事下部広告 -->
+							<div class="ad-banner content-ad">
+								<div class="effectiveness-label high">高効果</div>
+								<strong>記事下部広告 (728×90 or 300×250)</strong><br>
+								関連記事・次の行動促進<br>
+								CTR: 2.5-4.5% | 収益貢献度: 20-30%
+							</div>
+
+							<div class="tips">
+								<h4>💡 収益最大化のための配置テクニック</h4>
+								<ul>
+									<li><strong>記事上部・中間:</strong> 読者の関心が高い時点でアフィリエイト商品を配置</li>
+									<li><strong>サイドバー上部:</strong> 常に視界に入る位置で人気商品をアピール</li>
+									<li><strong>記事下部:</strong> 読了後の次のアクション（関連商品購入）を促進</li>
+									<li><strong>モバイル対応:</strong> スマホ表示では300×250サイズを優先</li>
+									<li><strong>A/Bテスト:</strong> 定期的に配置を変更して効果を測定</li>
+								</ul>
+							</div>
+						</div>
+
+						<div class="sidebar">
+							<div class="sidebar-section">
+								<h3>🎯 おすすめ商品</h3>
+								<div class="ad-banner sidebar-ad">
+									<div class="effectiveness-label high">高効果</div>
+									<strong>サイドバー上部 (300×250)</strong><br>
+									人気商品・セール情報<br>
+									CTR: 1.5-3.0% | 収益貢献度: 20-25%
+								</div>
+							</div>
+
+							<div class="sidebar-section">
+								<h3>📈 人気ランキング</h3>
+								<div class="ad-banner sidebar-ad">
+									<div class="effectiveness-label medium">中効果</div>
+									<strong>ランキング広告 (300×150)</strong><br>
+									トップ商品紹介<br>
+									CTR: 1.0-2.0% | 収益貢献度: 10-15%
+								</div>
+							</div>
+
+							<div class="sidebar-section">
+								<h3>🔥 今週のセール</h3>
+								<div class="ad-banner sidebar-ad">
+									<div class="effectiveness-label high">高効果</div>
+									<strong>セール広告 (300×200)</strong><br>
+									限定オファー・緊急性<br>
+									CTR: 2.0-4.0% | 収益貢献度: 15-25%
+								</div>
+							</div>
+
+							<div class="sidebar-section">
+								<div class="ad-banner sidebar-ad">
+									<div class="effectiveness-label low">低効果</div>
+									<strong>サイドバー下部 (300×250)</strong><br>
+									一般広告・補完的<br>
+									CTR: 0.5-1.5% | 収益貢献度: 5-10%
+								</div>
+							</div>
+						</div>
+					</div>
+				</article>
+			</div>
+		</main>
+		<Footer />
+	</body>
+</html>

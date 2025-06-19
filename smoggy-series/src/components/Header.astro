@@ -1,0 +1,200 @@
+---
+import HeaderLink from './HeaderLink.astro';
+import { SITE_TITLE } from '../consts';
+---
+
+<header>
+    <nav>
+        <h2><a href="/">{SITE_TITLE}</a></h2>
+        <button class="menu-toggle" aria-label="メニューを開閉" onclick="toggleMenu()">
+            <span class="sr-only">メニュー</span>
+            <div class="hamburger"></div>
+        </button>
+        <div class="internal-links">
+            <HeaderLink href="/">ホーム</HeaderLink>
+            <HeaderLink href="/blog">投稿記事</HeaderLink>
+            <HeaderLink href="/teiten">定点集</HeaderLink>
+            <HeaderLink href="/device">デバイス一覧</HeaderLink>
+            <HeaderLink href="/Link">リンク</HeaderLink>
+            <HeaderLink href="/terms">利用規約</HeaderLink>
+            <HeaderLink href="/about">お問い合わせ</HeaderLink>
+            
+        </div>
+    </nav>
+</header>
+
+<script>
+    window.toggleMenu = function () {
+        const menu = document.querySelector('.internal-links');
+        if (menu) {
+            menu.classList.toggle('active');
+        }
+    };
+</script>
+
+<style>
+    header {
+        margin: 0;
+        padding: 0 1em;
+        background: linear-gradient(90deg, #6a11cb, #2575fc);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+    }
+    h2 {
+        margin: 0;
+        font-size: 1.8em;
+    }
+    h2 a {
+        font-size: 1.5rem;
+        text-decoration: none;
+        color: white;
+    }
+    nav {
+        display: flex;
+        align-items: center;
+        justify-content: center; /* ナビゲーション全体を中央揃え */
+        gap: 2em; /* リンク間のスペースを調整 */
+    }
+    nav a {
+        padding: 1em 0.5em;
+        color: white;
+        border-bottom: 4px solid transparent;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+    nav a:hover {
+        color: #ffcc00;
+        border-bottom-color: #ffcc00;
+    }
+    nav a.active {
+        border-bottom-color: var(--accent);
+    }
+    .menu-toggle {
+        display: none;
+        background: none;
+        border: none;
+        cursor: pointer;
+    }
+    .hamburger {
+        width: 25px;
+        height: 3px;
+        background: white;
+        position: relative;
+    }
+    .hamburger::before,
+    .hamburger::after {
+        content: '';
+        width: 25px;
+        height: 3px;
+        background: white;
+        position: absolute;
+        left: 0;
+    }
+    .hamburger::before {
+        top: -8px;
+    }
+    .hamburger::after {
+        top: 8px;
+    }
+    
+    .internal-links {
+        display: flex;
+        gap: 1em;
+        justify-content: center; /* リンクを中央揃え */
+        align-items: center; /* 垂直方向も中央揃え */
+        transition: transform 0.3s ease, opacity 0.3s ease; /* アニメーション追加 */
+    }
+
+    @media (max-width: 720px) {
+        .internal-links {
+            display: flex;
+            flex-direction: column;
+            background: rgba(0, 0, 0, 0.9); /* 背景を少し濃く */
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            padding: 1em;
+            align-items: center; /* モバイル時も中央揃え */
+            transform: translateY(-50px); /* 初期位置を少し上に */
+            opacity: 0; /* 初期状態で透明 */
+            pointer-events: none; /* 非表示時にクリックを無効化 */
+            transition: transform 0.4s ease, opacity 0.4s ease; /* アニメーション追加 */
+        }
+        .internal-links.active {
+            transform: translateY(0); /* 表示時に元の位置に */
+            opacity: 1; /* 表示時に不透明 */
+            pointer-events: auto; /* 表示時にクリックを有効化 */
+        }
+            .menu-toggle {
+                display: block;
+            }
+        }
+    
+        .internal-links a {
+        padding: 0.5em 0.8em; /* パディングを小さく調整 */
+        font-size: 1em; /* フォントサイズを小さく */
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+        transition: background 0.3s ease, color 0.3s ease;
+    }
+
+    /* モバイル版のリンクスタイル */
+    @media (max-width: 720px) {
+        .internal-links a {
+            padding: 0.8em 1em; /* モバイル版ではパディングを大きめに */
+            font-size: 1.2em; /* モバイル版ではフォントサイズを大きめに */
+        }
+    }
+
+    .internal-links a:hover {
+        background: #ffcc00; /* ホバー時の背景色 */
+        color: black; /* ホバー時の文字色 */
+    }
+    
+        .hamburger {
+            width: 25px;
+            height: 3px;
+            background: white;
+            position: relative;
+            transition: all 0.3s ease; /* アニメーション追加 */
+        }
+    
+        .hamburger::before,
+        .hamburger::after {
+            content: '';
+            width: 25px;
+            height: 3px;
+            background: white;
+            position: absolute;
+            left: 0;
+            transition: all 0.3s ease; /* アニメーション追加 */
+        }
+    
+        .hamburger::before {
+            top: -8px;
+        }
+    
+        .hamburger::after {
+            top: 8px;
+        }
+    
+        .menu-toggle.active .hamburger {
+            background: transparent; /* 中央のバーを透明に */
+        }
+    
+        .menu-toggle.active .hamburger::before {
+            transform: rotate(45deg) translate(5px, 5px); /* クロス形状に */
+        }
+    
+        .menu-toggle.active .hamburger::after {
+            transform: rotate(-45deg) translate(5px, -5px); /* クロス形状に */
+        }
+
+        .menu-toggle {
+        margin-left: auto; /* ハンバーガーメニューを右端に配置 */
+    }
+    </style>

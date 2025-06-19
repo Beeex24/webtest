@@ -1,0 +1,1216 @@
+---
+import BaseHead from "../components/BaseHead.astro";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import { SITE_TITLE, SITE_DESCRIPTION } from "../consts";
+import { getCollection } from "astro:content";
+import FormattedDate from "../components/FormattedDate.astro";
+
+const posts = (await getCollection("blog")).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
+
+const devicePosts = (await getCollection("device")).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
+
+const allPosts = [...posts, ...devicePosts].sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
+
+import "swiper/swiper-bundle.css";
+---
+
+<!doctype html>
+<html lang="ja">
+  <head>
+    <!-- Swiper.js のスタイルとスクリプト -->
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/swiper/swiper-bundle.min.css"
+    />
+    <script src="https://unpkg.com/swiper/swiper-bundle.min.js" defer></script>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        new Swiper(".swiper-container", {
+          loop: true, // ループを有効化
+          autoplay: {
+            delay: 4000, // スライド間隔
+            disableOnInteraction: false, // ユーザー操作後も自動再生を継続
+          },
+          speed: 800, // アニメーション速度
+          navigation: {
+            nextEl: ".swiper-button-next",
+            prevEl: ".swiper-button-prev",
+          },
+          pagination: {
+            el: ".swiper-pagination",
+            clickable: true,
+          },
+          slidesPerView: 1, // デフォルトで1スライドを表示
+          spaceBetween: 20, // スライド間の余白
+          breakpoints: {
+            768: {
+              slidesPerView: 2, // 中画面では2スライドを表示
+              spaceBetween: 20, // スライド間の余白
+            },
+            1024: {
+              slidesPerView: 5, // 大画面では3スライドを表示
+              spaceBetween: 30, // スライド間の余白
+            },
+          },
+        });
+      });
+    </script>
+    <BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+    <style>
+      /* スライダーセクションのスタイル */
+      .blog-slider-section {
+        padding: 2rem;
+        background-color: #f9f9f9;
+        border-radius: 8px;
+        margin: 3.5rem auto;
+        max-width: 100vw;
+        width: 100vw;
+        position: relative;
+        box-sizing: border-box;
+      }
+
+      .blog-slider-section h2 {
+        font-size: 1.8rem;
+        text-align: center;
+        margin-bottom: 1rem;
+        color: #333;
+      }
+
+      .swiper-container {
+        width: 100%;
+        max-width: 1400px;
+        margin: 0 auto;
+        overflow: hidden; /* 画面外に出る部分を隠す */
+      }
+
+      .swiper,
+      .swiper-wrapper {
+        position: relative;
+        z-index: 1;
+      }
+
+      .swiper-wrapper {
+        box-sizing: content-box;
+        display: flex;
+        height: 100%;
+        width: 100%;
+      }
+
+      .swiper-slide {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        box-sizing: border-box;
+        flex-shrink: 0;
+        height: 100%;
+        width: 100%;
+      }
+
+      .blog-card {
+        width: 95%;
+        max-width: 350px;
+        background: #fff;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        text-decoration: none;
+        color: inherit;
+        margin: 0 10px;
+        transition:
+          box-shadow 0.3s,
+          transform 0.3s;
+      }
+
+      .blog-card:hover {
+        transform: translateY(-10px) scale(1.03);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+      }
+
+      .blog-card img {
+        width: 100%;
+        height: 180px;
+        object-fit: cover;
+      }
+
+      .blog-card-content {
+        padding: 1rem;
+      }
+
+      .blog-card-title {
+        font-size: 1.2rem;
+        font-weight: bold;
+        margin-bottom: 0.5rem;
+        color: #222;
+      }
+
+      .blog-card-description {
+        font-size: 0.9rem;
+        color: #555;
+        margin-bottom: 1rem;
+      }
+
+      .blog-card-date {
+        font-size: 0.8rem;
+        color: #888;
+        text-align: right;
+      }
+
+      /* Swiperナビゲーションボタンのカスタマイズ */
+      .swiper-button-next,
+      .swiper-button-prev {
+        background: rgba(0, 0, 0, 0.6);
+        color: #fff;
+        cursor: pointer;
+        height: 48px;
+        width: 48px;
+        border-radius: 50%;
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 10;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        transition: background 0.2s;
+      }
+      .swiper-button-next {
+        right: 20px;
+        left: auto;
+      }
+      .swiper-button-prev {
+        left: 20px;
+        right: auto;
+      }
+      .swiper-button-next:after,
+      .swiper-button-prev:after {
+        font-size: 1.6rem;
+        font-weight: bold;
+      }
+      .swiper-button-next:hover,
+      .swiper-button-prev:hover {
+        background: rgba(0, 0, 0, 0.85);
+      }
+
+      /* Swiperページネーション */
+      .swiper-pagination {
+        position: absolute;
+        bottom: 10px;
+        left: 0;
+        width: 100%;
+        text-align: center;
+        z-index: 10;
+      }
+      .swiper-pagination-bullet {
+        background: #000;
+        opacity: 0.3;
+        width: 10px;
+        height: 10px;
+        margin: 0 4px;
+        border-radius: 50%;
+        display: inline-block;
+        transition: opacity 0.2s;
+      }
+      .swiper-pagination-bullet-active {
+        background: #4781ff;
+        opacity: 1;
+      }
+
+      @media (max-width: 1024px) {
+        .blog-slider-section {
+          max-width: 100vw;
+          width: 100vw;
+        }
+        .swiper-container {
+          max-width: 98vw;
+        }
+      }
+      @media (max-width: 768px) {
+        .blog-slider-section {
+          padding: 1rem 0.2rem;
+          max-width: 100vw;
+          width: 100vw;
+        }
+        .swiper-container {
+          max-width: 100vw;
+        }
+        .blog-card {
+          max-width: 95vw;
+          margin: 0 2px;
+        }
+        .swiper-button-next,
+        .swiper-button-prev {
+          width: 32px;
+          height: 32px;
+        }
+        .swiper-button-next {
+          right: 4px;
+        }
+        .swiper-button-prev {
+          left: 4px;
+        }
+      }
+    </style>
+  </head>
+
+  <style>
+    @media (max-width: 768px) {
+      /* ブログカードの画像サイズ調整 */
+      .blog-card img {
+        height: 100px; /* 高さをさらに縮小 */
+        margin: 0 auto; /* 中央揃え */
+      }
+
+      /* ブログカードのタイトルと説明のフォントサイズ調整 */
+      .blog-card-title {
+        font-size: 0.9rem; /* タイトルのフォントサイズをさらに小さく */
+      }
+
+      .blog-card-description {
+        font-size: 0.75rem; /* 説明のフォントサイズをさらに小さく */
+      }
+
+      /* ブログセクションのグリッド調整 */
+      .blog-grid {
+        grid-template-columns: 1fr; /* モバイル画面では1列表示 */
+        gap: 0.5rem; /* カード間の余白を調整 */
+      }
+
+      /* スライダーのボタンサイズ調整 */
+      .blog-slider-section .swiper-button-next,
+      .blog-slider-section .swiper-button-prev {
+        width: 25px; /* ボタンの幅をさらに縮小 */
+        height: 25px; /* ボタンの高さをさらに縮小 */
+      }
+
+      /* アフィリエイトセクションのグリッド調整 */
+      .affiliate-grid {
+        grid-template-columns: 1fr; /* モバイル画面では1列表示 */
+        gap: 1rem; /* カード間の余白を調整 */
+      }
+
+      /* 通知バーのフォントサイズ調整 */
+      .notification-bar {
+        font-size: 1rem; /* フォントサイズをさらに小さく */
+      }
+
+      /* メインタイトルのフォントサイズ調整 */
+      main h1 {
+        font-size: 1.2rem; /* タイトルのフォントサイズをさらに小さく */
+      }
+
+      main p {
+        font-size: 0.9rem; /* 説明文のフォントサイズをさらに小さく */
+      }
+
+      /* 広告セクションの非表示 */
+      .side-ads {
+        display: none; /* モバイル画面では非表示 */
+      }
+
+      .ad-top-right {
+        display: none; /* モバイル画面では非表示 */
+      }
+    }
+  </style>
+
+  <!-- 上部右側ディスプレイ広告 -->
+
+  <body>
+    <Header />
+    <div class="ad-top-right">
+      <a
+        href="https://www.example.com"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <img src="https://via.placeholder.com/300x250" alt="ディスプレイ広告" />
+      </a>
+    </div>
+
+    <style>
+      .ad-top-right {
+        position: absolute;
+        top: 10rem;
+        right: 50rem;
+        z-index: 1000; /* ヘッダーや他の要素より前面に表示 */
+      }
+
+      .ad-top-right img {
+        width: 300px;
+        height: 250px;
+        border: none;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+    </style>
+
+    <!-- filepath: d:\ProgramData\vsc\UNCHI\smoggy-series\src\pages\index.astro -->
+    <!-- サイド広告セクション -->
+
+    <div class="side-ads">
+      <a
+        href="https://www.example.com/ad1"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <img src="https://via.placeholder.com/150" alt="広告1" />
+      </a>
+      <a
+        href="https://www.example.com/ad2"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <img src="https://via.placeholder.com/150" alt="広告2" />
+      </a>
+      <a
+        href="https://www.example.com/ad3"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <img src="https://via.placeholder.com/150" alt="広告3" />
+      </a>
+      <a
+        href="https://www.example.com/ad4"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <img src="https://via.placeholder.com/150" alt="広告4" />
+      </a>
+      <a
+        href="https://www.example.com/ad5"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <img src="https://via.placeholder.com/150" alt="広告5" />
+      </a>
+      <a
+        href="https://www.example.com/ad6"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <img src="https://via.placeholder.com/150" alt="広告6" />
+      </a>
+    </div>
+
+    <!-- filepath: d:\ProgramData\vsc\UNCHI\smoggy-series\src\pages\index.astro -->
+    <style>
+      .side-ads {
+        margin-top: 50rem;
+        margin-right: 4rem;
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 3rem;
+        float: right; /* デフォルトでは右側に配置 */
+      }
+
+      .side-ads img {
+        width: 150px;
+        height: 150px;
+        border: none;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+
+      /* モバイル画面用のスタイル */
+      @media (max-width: 768px) {
+        .side-ads {
+          display: none; /* モバイル画面では非表示 */
+        }
+      }
+    </style>
+
+    <!-- 上部ポップアップバナー -->
+
+    <div class="notification-bar">
+      <p>
+        <a href="/aboutsite" target="_blank" rel="noopener noreferrer">
+          🎉Anygames放送局サイトリリース！！！🎉
+        </a>
+      </p>
+    </div>
+
+    <style>
+      .notification-bar {
+        background-color: #4781ff; /* 鮮やかな赤色 */
+        color: white;
+        text-align: center;
+        padding: 0.5rem 1rem;
+        font-size: 1.5rem;
+        font-weight: bold;
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .notification-bar a {
+        color: white;
+        text-decoration: none;
+        transition: color 0.3s ease;
+      }
+
+      .notification-bar a:hover {
+        color: #ffe066; /* ホバー時に黄色に変更 */
+      }
+    </style>
+
+    <main>
+      <!-- javascriptのスワイパーコンテンツ表示 -->
+
+      <section class="blog-slider-section">
+        <h2>最新の投稿記事</h2>
+        <div class="swiper-container">
+          <div class="swiper-wrapper">
+            {
+              allPosts.map((post) => (
+                <div class="swiper-slide">
+                  <a href={`/${post.collection}/${post.id}/`} class="blog-card">
+                    <img src={post.data.heroImage} alt={post.data.title} />
+                    <div class="blog-card-content">
+                      <div class="blog-card-title">{post.data.title}</div>
+                      <div class="blog-card-description">
+                        {post.data.description}
+                      </div>
+                      <div class="blog-card-date">
+                        <FormattedDate date={post.data.pubDate} />
+                      </div>
+                    </div>
+                  </a>
+                </div>
+              ))
+            }
+          </div>
+          <!-- スライダーのナビゲーションボタン -->
+          <div class="swiper-button-next"></div>
+          <div class="swiper-button-prev"></div>
+          <!-- スライダーのページネーション -->
+          <div class="swiper-pagination"></div>
+        </div>
+      </section>
+
+      <!-- ページ中央　タブリスト表示 -->
+
+      <html lang="ja">
+        <head>
+          <meta charset="UTF-8" />
+          <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1.0"
+          />
+          <title>タブ付き記事リスト</title>
+          <style>
+            * {
+              margin: 0;
+              padding: 0;
+              box-sizing: border-box;
+            }
+
+            body {
+              font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+              background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+              min-height: 100vh;
+              padding: 2rem;
+            }
+
+            .container {
+              max-width: 1200px;
+              margin: 0 auto;
+              background: rgba(255, 255, 255, 0.95);
+              border-radius: 20px;
+              overflow: hidden;
+              box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+              backdrop-filter: blur(10px);
+            }
+
+            .tab-header {
+              display: flex;
+              background: linear-gradient(135deg, #2c3e50, #3498db);
+              position: relative;
+              overflow: hidden;
+            }
+
+            .tab-header::before {
+              content: "";
+              position: absolute;
+              top: 0;
+              left: 0;
+              right: 0;
+              bottom: 0;
+              background: linear-gradient(
+                45deg,
+                transparent 30%,
+                rgba(255, 255, 255, 0.1) 50%,
+                transparent 70%
+              );
+              animation: shimmer 3s infinite;
+            }
+
+            @keyframes shimmer {
+              0% {
+                transform: translateX(-100%);
+              }
+              100% {
+                transform: translateX(200%);
+              }
+            }
+
+            .tab-button {
+              flex: 1;
+              padding: 1.5rem 2rem;
+              background: none;
+              border: none;
+              color: rgba(255, 255, 255, 0.7);
+              font-size: 1.1rem;
+              font-weight: 600;
+              cursor: pointer;
+              transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+              position: relative;
+              z-index: 2;
+              text-transform: uppercase;
+              letter-spacing: 1px;
+            }
+
+            .tab-button:hover {
+              color: rgba(255, 255, 255, 0.9);
+              transform: translateY(-2px);
+            }
+
+            .tab-button.active {
+              color: #fff;
+              background: rgba(255, 255, 255, 0.2);
+              backdrop-filter: blur(10px);
+            }
+
+            .tab-button.active::after {
+              content: "";
+              position: absolute;
+              bottom: 0;
+              left: 50%;
+              width: 50px;
+              height: 3px;
+              background: linear-gradient(90deg, #ff6b6b, #4ecdc4);
+              transform: translateX(-50%);
+              border-radius: 2px;
+            }
+
+            .tab-content {
+              padding: 2rem;
+              min-height: 600px;
+            }
+
+            .article-grid {
+              display: grid;
+              grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+              gap: 2rem;
+              opacity: 0;
+              transform: translateY(20px);
+              animation: fadeInUp 0.6s ease forwards;
+            }
+
+            @keyframes fadeInUp {
+              to {
+                opacity: 1;
+                transform: translateY(0);
+              }
+            }
+
+            .article-card {
+              background: #fff;
+              border-radius: 16px;
+              overflow: hidden;
+              box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+              transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+              position: relative;
+              cursor: pointer;
+            }
+
+            .article-card::before {
+              content: "";
+              position: absolute;
+              top: 0;
+              left: 0;
+              right: 0;
+              bottom: 0;
+              background: linear-gradient(
+                135deg,
+                rgba(255, 107, 107, 0.1),
+                rgba(78, 205, 196, 0.1)
+              );
+              opacity: 0;
+              transition: opacity 0.3s ease;
+            }
+
+            .article-card:hover {
+              transform: translateY(-10px) scale(1.02);
+              box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+            }
+
+            .article-card:hover::before {
+              opacity: 1;
+            }
+
+            .article-image {
+              width: 100%;
+              height: 200px;
+              object-fit: cover;
+              transition: transform 0.6s ease;
+            }
+
+            .article-card:hover .article-image {
+              transform: scale(1.1);
+            }
+
+            .article-content {
+              padding: 1.5rem;
+              position: relative;
+              z-index: 2;
+            }
+
+            .article-category {
+              display: inline-block;
+              padding: 0.3rem 0.8rem;
+              background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+              color: white;
+              font-size: 0.8rem;
+              font-weight: 600;
+              border-radius: 20px;
+              margin-bottom: 1rem;
+              text-transform: uppercase;
+              letter-spacing: 0.5px;
+            }
+
+            .article-title {
+              font-size: 1.3rem;
+              font-weight: 700;
+              color: #2c3e50;
+              margin-bottom: 0.8rem;
+              line-height: 1.4;
+              transition: color 0.3s ease;
+            }
+
+            .article-card:hover .article-title {
+              color: #3498db;
+            }
+
+            .article-description {
+              color: #7f8c8d;
+              font-size: 0.95rem;
+              line-height: 1.6;
+              margin-bottom: 1rem;
+            }
+
+            .article-meta {
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              color: #95a5a6;
+              font-size: 0.85rem;
+            }
+
+            .article-date {
+              font-weight: 600;
+            }
+
+            .article-card-link {
+              text-decoration: none;
+              color: inherit;
+              display: block;
+              transition: transform 0.3s ease;
+            }
+
+            .article-card-link:hover {
+              transform: translateY(-10px);
+            }
+
+            .read-more {
+              background: linear-gradient(135deg, #3498db, #2980b9);
+              color: white;
+              padding: 0.5rem 1rem;
+              border-radius: 20px;
+              text-decoration: none;
+              font-size: 0.8rem;
+              font-weight: 600;
+              transition: all 0.3s ease;
+              text-transform: uppercase;
+              letter-spacing: 0.5px;
+            }
+
+            .read-more:hover {
+              background: linear-gradient(135deg, #2980b9, #3498db);
+              transform: translateY(-2px);
+              box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+            }
+
+            .tab-panel {
+              display: none;
+              animation: slideIn 0.5s ease forwards;
+            }
+
+            .tab-panel.active {
+              display: block;
+            }
+
+            @keyframes slideIn {
+              from {
+                opacity: 0;
+                transform: translateX(20px);
+              }
+              to {
+                opacity: 1;
+                transform: translateX(0);
+              }
+            }
+
+            .empty-state {
+              text-align: center;
+              padding: 4rem 2rem;
+              color: #7f8c8d;
+            }
+
+            .empty-state h3 {
+              font-size: 1.5rem;
+              margin-bottom: 1rem;
+              color: #95a5a6;
+            }
+
+            .tab-section {
+              margin-bottom: 2rem;
+              text-align: center;
+            }
+
+            .tab-section h1 {
+              color: white;
+              margin-bottom: 1rem;
+              font-size: 2rem;
+            }
+
+            .tab-list {
+              display: flex;
+              justify-content: center;
+              gap: 1rem;
+              list-style: none;
+              margin-bottom: 2rem;
+            }
+
+            .tab-item {
+              padding: 0.5rem 1rem;
+              background: rgba(255, 255, 255, 0.2);
+              color: white;
+              border-radius: 10px;
+              cursor: pointer;
+              transition: all 0.3s ease;
+            }
+
+            .tab-item.active {
+              background: rgba(255, 255, 255, 0.3);
+            }
+
+            @media (max-width: 768px) {
+              .container {
+                margin: 1rem;
+                border-radius: 15px;
+              }
+
+              .tab-button {
+                padding: 1rem;
+                font-size: 0.9rem;
+              }
+
+              .tab-content {
+                padding: 1rem;
+              }
+
+              .article-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+              }
+
+              .article-card {
+                border-radius: 12px;
+              }
+
+              .article-image {
+                height: 160px;
+              }
+
+              .article-content {
+                padding: 1rem;
+              }
+
+              .article-title {
+                font-size: 1.1rem;
+              }
+
+              .tab-list {
+                flex-direction: column;
+                align-items: center;
+              }
+            }
+          </style>
+        </head>
+        <body>
+          <!-- ページ中央　タブリスト表示 -->
+          <section class="tab-section">
+            <h1>タブリスト</h1>
+            <ul class="tab-list">
+              <li class="tab-item active" data-tab="all">最新記事</li>
+              <li class="tab-item" data-tab="blog">ブログ記事</li>
+              <li class="tab-item" data-tab="device">デバイス記事</li>
+            </ul>
+          </section>
+
+          <div class="container">
+            <div class="tab-header">
+              <button class="tab-button active" data-tab="all"
+                >すべての記事</button
+              >
+              <button class="tab-button" data-tab="blog">ブログ記事</button>
+              <button class="tab-button" data-tab="device">デバイス記事</button>
+              <button class="tab-button" data-tab="news">ニュース</button>
+            </div>
+
+            <div class="tab-content">
+              <!-- すべての記事タブ -->
+
+              <div class="tab-panel active" id="all">
+                <div class="article-grid">
+                  {
+                    allPosts.map((post) => (
+                      <a
+                        href={`/${post.collection}/${post.id}/`}
+                        class="article-card-link"
+                      >
+                        <article class="article-card">
+                          <img
+                            src={post.data.heroImage}
+                            alt={post.data.title}
+                            class="article-image"
+                          />
+                          <div class="article-content">
+                            <span class="article-category">
+                              {post.collection}
+                            </span>
+                            <h3 class="article-title">{post.data.title}</h3>
+                            <p class="article-description">
+                              {post.data.description}
+                            </p>
+                            <div class="article-meta">
+                              <span class="article-date">
+                                <FormattedDate date={post.data.pubDate} />
+                              </span>
+                              <span class="read-more">続きを読む</span>
+                            </div>
+                          </div>
+                        </article>
+                      </a>
+                    ))
+                  }
+                </div>
+              </div>
+
+              <!-- ブログ記事タブ -->
+              <div class="tab-panel" id="blog">
+                <div class="article-grid">
+                  {
+                    posts.map((post) => (
+                      <a href={`/blog/${post.id}/`} class="article-card-link">
+                        <article class="article-card">
+                          <img
+                            src={post.data.heroImage}
+                            alt={post.data.title}
+                            class="article-image"
+                          />
+                          <div class="article-content">
+                            <span class="article-category">ブログ</span>
+                            <h3 class="article-title">{post.data.title}</h3>
+                            <p class="article-description">
+                              {post.data.description}
+                            </p>
+                            <div class="article-meta">
+                              <span class="article-date">
+                                <FormattedDate date={post.data.pubDate} />
+                              </span>
+                              <span class="read-more">続きを読む</span>
+                            </div>
+                          </div>
+                        </article>
+                      </a>
+                    ))
+                  }
+                </div>
+              </div>
+
+              <!-- デバイス記事タブ -->
+              <div class="tab-panel" id="device">
+                <div class="article-grid">
+                  {
+                    devicePosts.map((post) => (
+                      <a href={`/device/${post.id}/`} class="article-card-link">
+                        <article class="article-card">
+                          <img
+                            src={post.data.heroImage}
+                            alt={post.data.title}
+                            class="article-image"
+                          />
+                          <div class="article-content">
+                            <span class="article-category">デバイス</span>
+                            <h3 class="article-title">{post.data.title}</h3>
+                            <p class="article-description">
+                              {post.data.description}
+                            </p>
+                            <div class="article-meta">
+                              <span class="article-date">
+                                <FormattedDate date={post.data.pubDate} />
+                              </span>
+                              <span class="read-more">続きを読む</span>
+                            </div>
+                          </div>
+                        </article>
+                      </a>
+                    ))
+                  }
+                </div>
+              </div>
+
+              <!-- ニュースタブ (空の場合の表示) -->
+              <div class="tab-panel" id="news">
+                <div class="empty-state">
+                  <h3>記事がありません</h3>
+                  <p>現在ニュース記事は投稿されていません。</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <script>
+            document.addEventListener("DOMContentLoaded", function () {
+              // 既存のタブボタンのイベントリスナー
+              const tabButtons = document.querySelectorAll(".tab-button");
+              const tabItems = document.querySelectorAll(".tab-item");
+              const tabPanels = document.querySelectorAll(".tab-panel");
+
+              // タブリストのイベントリスナー
+              tabItems.forEach((item) => {
+                item.addEventListener("click", function () {
+                  const targetTab = this.getAttribute("data-tab");
+
+                  // タブリストのアクティブ状態を更新
+                  tabItems.forEach((tab) => tab.classList.remove("active"));
+                  this.classList.add("active");
+
+                  // 対応するタブボタンをクリック
+                  tabButtons.forEach((button) => {
+                    if (button.getAttribute("data-tab") === targetTab) {
+                      // 修正: HTMLElementとして型アサーションを行う
+                      (button as HTMLElement).click();
+                    }
+                  });
+                });
+              });
+
+              // 既存のタブボタンのイベントハンドラー
+              tabButtons.forEach((button) => {
+                button.addEventListener("click", function () {
+                  const targetTab = this.getAttribute("data-tab");
+
+                  // アクティブなタブボタンを切り替え
+                  tabButtons.forEach((btn) => btn.classList.remove("active"));
+                  this.classList.add("active");
+
+                  // タブリストのアクティブ状態も更新
+                  tabItems.forEach((item) => {
+                    if (item.getAttribute("data-tab") === targetTab) {
+                      item.classList.add("active");
+                    } else {
+                      item.classList.remove("active");
+                    }
+                  });
+
+                  // タブパネルを切り替え
+                  tabPanels.forEach((panel) => {
+                    panel.classList.remove("active");
+                    if (panel.id === targetTab) {
+                      panel.classList.add("active");
+                    }
+                  });
+
+                  // アニメーション効果
+                  const activeGrid = document.querySelector(
+                    `#${targetTab} .article-grid`
+                  );
+                  if (activeGrid && activeGrid instanceof HTMLElement) {
+                    activeGrid.style.animation = "none";
+                    setTimeout(() => {
+                      activeGrid.style.animation =
+                        "fadeInUp 0.6s ease forwards";
+                    }, 50);
+                  }
+                });
+              });
+            });
+          </script>
+        </body>
+      </html>
+
+      <!-- ページ下部　アフィリエイトリンク(amazon) -->
+
+      <section class="affiliate-section">
+        <h2>おすすめのゲーミングデバイス</h2>
+        <div class="affiliate-grid">
+          <div class="affiliate-card">
+            <img src="https://via.placeholder.com/250x150" alt="商品1" />
+            <h3>Logicool G PRO X SUPERLIGHT</h3>
+            <p>軽量で高性能なゲーミングマウス</p>
+            <p class="price">¥19,000</p>
+            <a href="https://www.amazon.co.jp/" target="_blank">Amazonで見る</a>
+          </div>
+          <div class="affiliate-card">
+            <img src="https://via.placeholder.com/250x150" alt="商品2" />
+            <h3>Razer BlackWidow V3</h3>
+            <p>快適なタイピングが可能なメカニカルキーボード</p>
+            <p class="price">¥15,000</p>
+            <a href="https://www.amazon.co.jp/" target="_blank">Amazonで見る</a>
+          </div>
+          <div class="affiliate-card">
+            <img src="https://via.placeholder.com/250x150" alt="商品3" />
+            <h3>BenQ ZOWIE XL2546K</h3>
+            <p>240Hz対応のゲーミングモニター</p>
+            <p class="price">¥45,000</p>
+            <a href="https://www.amazon.co.jp/" target="_blank">Amazonで見る</a>
+          </div>
+          <div class="affiliate-card">
+            <img src="https://via.placeholder.com/250x150" alt="商品4" />
+            <h3>SteelSeries QcK Heavy</h3>
+            <p>滑らかな操作感のマウスパッド</p>
+            <p class="price">¥3,000</p>
+            <a href="https://www.amazon.co.jp/" target="_blank">Amazonで見る</a>
+          </div>
+        </div>
+      </section>
+
+      <style>
+        .affiliate-section {
+          padding: 2rem;
+          background-color: #f9f9f9;
+          border-radius: 8px;
+          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+          margin: 2rem 0;
+        }
+
+        .affiliate-section h2 {
+          font-size: 1.8rem;
+          margin-bottom: 1rem;
+          color: #333;
+        }
+
+        .affiliate-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+          gap: 1.5rem;
+        }
+
+        .affiliate-card {
+          background: #fff;
+          border: 1px solid #ddd;
+          border-radius: 8px;
+          padding: 1rem;
+          text-align: center;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+          transition:
+            transform 0.2s ease,
+            box-shadow 0.2s ease;
+        }
+
+        .affiliate-card:hover {
+          transform: translateY(-5px);
+          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .affiliate-card img {
+          width: 100%;
+          height: auto;
+          border-radius: 4px;
+          margin-bottom: 1rem;
+        }
+
+        .affiliate-card h3 {
+          font-size: 1.2rem;
+          margin-bottom: 0.5rem;
+          color: #333;
+        }
+
+        .affiliate-card p {
+          font-size: 0.9rem;
+          color: #666;
+          margin-bottom: 1rem;
+        }
+
+        .affiliate-card .price {
+          font-size: 1.2rem;
+          font-weight: bold;
+          color: #e60023;
+          margin-bottom: 1rem;
+        }
+
+        .affiliate-card a {
+          display: inline-block;
+          padding: 0.5rem 1rem;
+          background-color: #ff9900;
+          color: #fff;
+          text-decoration: none;
+          border-radius: 4px;
+          font-weight: bold;
+          transition: background-color 0.2s ease;
+        }
+
+        .affiliate-card a:hover {
+          background-color: #cc7a00;
+        }
+      </style>
+    </main>
+
+    <!-- ページ下部　ad-section -->
+
+    <section class="ad-section">
+      <div class="ad-container">
+        <a
+          href="https://www.example.com"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <img
+            src="https://via.placeholder.com/728x90"
+            alt="ディスプレイ広告"
+          />
+        </a>
+      </div>
+    </section>
+
+    <style>
+      .ad-section {
+        padding: 1rem 0;
+        background-color: #f9f9f9;
+        text-align: center;
+      }
+
+      .ad-container {
+        max-width: 728px;
+        margin: 0 auto;
+      }
+
+      .ad-container img {
+        width: 100%;
+        height: auto;
+        border: none;
+      }
+    </style>
+
+    <Footer />
+  </body>
+</html>
